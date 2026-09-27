@@ -1,15 +1,15 @@
-import {regions} from './regions.js?v=20260927-4';
-import {scenes,regionById,axisNames,questionMap,blankSession,flowFor,selectedFor,recommend,itineraryFor,validateSession,compareProfiles,mirrorFor} from './journey.js?v=20260927-4';
-import {renderResult,renderRegionGuide} from './result-view.js?v=20260927-4';
-import {reportFor} from './report.js?v=20260927-4';
-import {sceneDetail} from './visuals.js?v=20260927-4';
-import {buildAiHandoff} from './handoff.js?v=20260927-4';
-import {createTravelCard} from './souvenir.js?v=20260927-4';
-import {sceneImage,originalImageUrl} from './media.js?v=20260927-4';
-import {classicExplorer,classicDialogBody,classicById} from './classic-view.js?v=20260927-4';
-import {corridors,corridorById} from './corridors.js?v=20260927-4';
-import {corridorExplorer,corridorDialogBody,nearbySection,placeDialogBody,placeById} from './corridor-view.js?v=20260927-4';
-import {initAnalytics,track,analyticsStatus,setAnalyticsEnabled,shareUrl} from './analytics.js?v=20260927-4';
+import {regions} from './regions.js?v=20260927-5';
+import {scenes,regionById,axisNames,questionMap,blankSession,flowFor,selectedFor,recommend,itineraryFor,validateSession,compareProfiles,mirrorFor} from './journey.js?v=20260927-5';
+import {renderResult,renderRegionGuide} from './result-view.js?v=20260927-5';
+import {reportFor} from './report.js?v=20260927-5';
+import {sceneDetail} from './visuals.js?v=20260927-5';
+import {buildAiHandoff} from './handoff.js?v=20260927-5';
+import {createTravelCard} from './souvenir.js?v=20260927-5';
+import {sceneImage,originalImageUrl} from './media.js?v=20260927-5';
+import {classicExplorer,classicDialogBody,classicById} from './classic-view.js?v=20260927-5';
+import {corridors,corridorById} from './corridors.js?v=20260927-5';
+import {corridorExplorer,corridorDialogBody,nearbySection,placeDialogBody,placeById} from './corridor-view.js?v=20260927-5';
+import {initAnalytics,track,analyticsStatus,setAnalyticsEnabled,shareUrl} from './analytics.js?v=20260927-5';
 const publicUrl='https://asimovvong.github.io/xinxiang-caiyun/';
 let lastCard=null,cardGeneration=0;
 const $=s=>document.querySelector(s);
@@ -21,8 +21,8 @@ const person=()=>state.profiles[state.active];
 const img=(id,cls='',lazy=true)=>sceneImage(scenes[id]?.image||'yunnan-atlas',{className:cls,alt:scenes[id]?.sub?scenes[id].sub+'区域情境插画，非当地实景照片':'云南风物艺术图鉴，非实景照片',priority:!lazy,sizes:cls==='option-thumb'?'80px':'(max-width:650px) 92vw, (max-width:1000px) 50vw, 640px'});
 function save(){try{localStorage.setItem(key,JSON.stringify(state));saveFailed=false;}catch{saveFailed=true;toast('此浏览器无法保存，请通过“保存与导出”下载手记。');}}
 function toast(s){$('#toast').textContent=s;$('#toast').classList.add('visible');clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').classList.remove('visible'),3800);}
-function modal(title,body,wide=false){$('#dialog-title').textContent=title;$('#dialog-body').innerHTML=body;$('#dialog').classList.toggle('wide',wide);if(!$('#dialog').open)$('#dialog').showModal();}
-function navigate(view){state.view=view;routeChoice=person().routeId||null;save();render(true);}
+function modal(title,body,wide=false){$('#dialog-title').textContent=title;$('#dialog-body').innerHTML=body;$('#dialog').classList.toggle('wide',wide);$('#dialog').classList.toggle('atlas-dialog',body.includes('class="atlas-tabs"'));if(!$('#dialog').open)$('#dialog').showModal();$('#dialog').scrollTop=0;$('#dialog-body').scrollTop=0;$('#dialog-title').focus({preventScroll:true});}
+function navigate(view){$('#dialog').close();state.view=view;routeChoice=person().routeId||null;save();render(true);}
 function activeResult(){return recommend(person(),state.settings);}
 function render(top=false){
   if(!routeChoice&&person().routeId)routeChoice=person().routeId;
@@ -34,11 +34,13 @@ function render(top=false){
   if(top){window.scrollTo({top:0,behavior:'instant'});$('#main').focus({preventScroll:true});}
 }
 function sceneCard(id,small=false){return `<button class="scene-card ${small?'small':''}" data-action="choose-scene" data-id="${id}">${sceneImage(scenes[id].image,{alt:scenes[id].sub+'区域情境插画，非实景照片',priority:id==='dali',sizes:small?'(max-width:650px) 85vw, 480px':'(max-width:420px) 630px, (max-width:800px) 770px, 900px'})}<span class="scene-card-copy"><small>${escape(scenes[id].sub)}</small><strong>${escape(scenes[id].title)}</strong><span class="scene-entry">走进这个下午 <span aria-hidden="true">↗</span></span></span></button>`;}
+function entryButtons(){return `<div class="entry-grid" aria-label="直接打开云南探索入口"><button class="entry-door" data-action="atlas"><span class="entry-symbol" aria-hidden="true">山</span><span><strong>云南互动地图</strong><small>看方位、海拔与风物</small></span><span aria-hidden="true">↗</span></button><button class="entry-door" data-action="classic-directory"><span class="entry-symbol" aria-hidden="true">路</span><span><strong>经典目的地与线路</strong><small>大理、丽江、版纳怎么选</small></span><span aria-hidden="true">↗</span></button><button class="entry-door" data-action="region-directory"><span class="entry-symbol" aria-hidden="true">日</span><span><strong>各地具体的一天</strong><small>吃什么、怎么玩、接受什么</small></span><span aria-hidden="true">↗</span></button><button class="entry-door" data-action="results"><span class="entry-symbol" aria-hidden="true">心</span><span><strong>我的旅行结论</strong><small>${person().focus===null?'留下线索后，在这里看建议':'路线、节奏与每天的安排'}</small></span><span aria-hidden="true">↗</span></button></div><div class="entry-tools" aria-label="带走答案与同行"><button data-action="ai-handoff">复制给 AI <span>↗</span></button><button data-action="souvenir">旅行小卡 <span>↗</span></button><button data-action="compare">同行对照 <span>↗</span></button><button data-action="storage">保存与导入 <span>↗</span></button></div>`;}
+function entryDialog(){modal('你想从哪里打开云南？',`<p class="entry-dialog-intro">每一个入口，都可以直接打开。探索到一半也能回来，你的答案会留下。</p><button class="primary hub-begin" data-action="begin">${person().focus===null?'开始探寻之旅':person().complete?'回看这次的向往':'继续我的探寻'} <span aria-hidden="true">↗</span></button>${entryButtons()}`);}
+function regionDirectory(){return `<p class="directory-intro">先借一个具体的下午，认识一个地方。点开就能看到一天怎么过、当地味道，以及需要接受的代价。</p><div class="region-directory">${[{title:'苍山洱海 · 雪山藏地',ids:['dali','lijiang','shangrila','shaxi']},{title:'春城蓝湖 · 滇南烟火',ids:['kunming','fuxian','jianshui','mengzi','mile','yuanyang']},{title:'边城风味 · 温泉古镇',ids:['mangshi','tengchong']},{title:'热带植物 · 茶山村寨',ids:['xishuangbanna','puer','jingmai']}].map(group=>`<section><h3>${group.title}</h3><div class="region-directory-grid">${group.ids.map(id=>`<button data-action="region" data-id="${id}">${img(id)}<span><strong>${escape(regionById[id].name)}</strong><small>${escape(scenes[id].title)}</small><em>打开这一天 ↗</em></span></button>`).join('')}</div></section>`).join('')}</div>`;}
+function atlasDialog(tab='map'){if(!['map','art','places'].includes(tab))tab='map';const tabs=[['map','互动地图'],['art','山水图鉴'],['places','各地的一天']];modal('云南山水风物图鉴',`<div class="atlas-tabs" aria-label="图鉴内容">${tabs.map(([id,label])=>`<button data-action="atlas-tab" data-id="${id}" aria-pressed="${id===tab}">${label}</button>`).join('')}</div>${tab==='map'?`<p class="atlas-caption">看清雪山、湖泊、古城与雨林在哪里。地图可缩放、点选。<a href="atlas.html?v=20260927-5-atlas" target="_blank" rel="noopener">单独打开完整地图与资料 ↗</a></p><iframe class="atlas-frame atlas-direct-map" src="atlas.html?v=20260927-5-atlas&compact=1" title="云南16州市可缩放互动风物地图"></iframe><div class="atlas-map-actions"><button class="secondary" data-action="region-directory">打开各地的一天 ↗</button><button class="text-link" data-action="atlas-tab" data-id="art">看看山水插画图鉴</button></div>`:tab==='art'?`<p class="atlas-caption">从雪山峡谷，到湖泊、梯田与雨林。全年艺术示意，不代表同一季节能看到所有景观。</p><div class="atlas-art-preview">${sceneImage('yunnan-atlas',{alt:'云南山水风物艺术图鉴',sizes:'(max-width:650px) 90vw, 840px'})}<button class="secondary" data-action="atlas-original">放大看高清原图 ↗</button></div>`:regionDirectory()}`,true);}
 function home(){const p=person(),count=selectedFor(p).filter(x=>x.option).length;return `
-<section class="opening">
- <div class="opening-copy"><div class="chapter-line"><span>从心动开始</span><span>2026 / 国庆</span></div><h1>去云南，<br>你想过<br>哪一种日子？</h1><p class="lead">攻略越收藏，越不知道怎么选？<br>先找出让你想停下来的那一天。</p><p class="intro-note">沿着具体场景聊一聊向往与代价。<br>最后带走一条适合自己的路线、给 AI 的完整思路，和一张云南旅行小卡。</p>
- ${count?`<div class="resume"><span>上次已经看清 ${count} 件事</span><button class="primary" data-action="resume">接着上次的想法</button></div>`:''}
- <button class="primary begin-explore" data-action="choose-scene" data-id="unknown">找到这次想去的云南</button><button class="text-link" data-action="scroll-corridors">看看经典目的地与线路 <span>↗</span></button><div class="private-note">不用登录 · 可以说不确定 · 答案留在本机</div></div>
+<section class="opening entry-opening">
+ <div class="opening-copy"><div class="chapter-line"><span>一场关于向往的旅行</span><span>心向彩云</span></div><h1>去云南，<br>你想过哪一种日子？</h1><p class="lead">攻略存满了，还是选不出？<br>从具体的一天，找到真正想去的云南。</p><div class="entry-start"><button class="primary begin-explore" data-action="begin">${p.focus===null?'开始探寻之旅':p.complete?'回看这次的向往':'继续我的探寻'} <span aria-hidden="true">↗</span></button><small>${count?`已留下 ${count} 个线索 · 已自动保存`:'不用登录 · 可以说不确定 · 答案留在本机'}</small></div>${entryButtons()}</div>
  <div class="first-scenes">${sceneCard('dali')}${sceneCard('shangrila')}${sceneCard('mangshi')}</div>
 </section>
 <section class="how-it-works"><p>从“哪里都想去”，走到“这次就这样过”。</p><ol><li><b>看见心动</b><span>进入具体的一天</span></li><li><b>分清期待</b><span>用追问和取舍确认</span></li><li><b>安排云南</b><span>喜欢的地方，合适的节奏</span></li><li><b>带走答案</b><span>AI 接力／旅行小卡</span></li></ol></section>${classicExplorer()}<section class="more-scenes"><div class="section-line"><h2>还没选定方向？借一个下午，试试直觉</h2><span>不必全选，先跟着直觉走</span></div><div class="scene-strip">${['jianshui','kunming','fuxian','lijiang'].map(id=>sceneCard(id,true)).join('')}</div><p class="art-caption">场景为原创情境插画，非真实照片；晴空、花木与水色不代表国庆实景。</p></section>
@@ -100,14 +102,18 @@ async function souvenirDialog(){
  }catch{modal('小卡暂时没有生成',`<p>场景图片尚未读取成功，请检查网络后重试。答案仍保存在此浏览器。</p><button class="primary" data-action="souvenir">重新生成</button>`);}
 }
 function download(name,text,type='text/plain;charset=utf-8'){const url=URL.createObjectURL(new Blob([text],{type})),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);}
-function storageDialog(){modal('保存、导出与两人汇总',`<p>选择会自动保存在当前浏览器。更换设备、无痕浏览或清理浏览数据可能使它丢失；下载一份 JSON 就能恢复。</p><div class="storage-actions"><button class="primary" data-action="ai-handoff">复制给 AI，继续分析与规划</button><button class="secondary" data-action="souvenir">生成并保存云南旅行小卡</button><button class="secondary" data-action="export">下载完整答案备份</button><button class="secondary" data-action="import">导入备份或朋友的答案</button><button class="secondary" data-action="paste-import">粘贴备份文字来恢复</button><button class="secondary" data-action="journal">复制／下载我的文字手记</button></div><p class="notice">答案与自由文字只保存在设备中，不会作为问卷数据上传；托管服务仍会处理网页访问请求，GoatCounter记录访问和固定功能事件，不记录答案。暂不提供云端同步。<button class="text-link" data-action="privacy">查看或关闭使用统计</button></p><button class="text-link danger" data-action="reset-prompt">重新开始当前填写人的探索</button>`);}
+function storageDialog(){modal('保存、导出与两人汇总',`<p>选择会自动保存在当前浏览器。更换设备、无痕浏览或清理浏览数据可能使它丢失；下载一份 JSON 就能恢复。</p><div class="storage-actions"><button class="primary" data-action="ai-handoff">复制给 AI，继续分析与规划</button><button class="secondary" data-action="souvenir">生成并保存云南旅行小卡</button><button class="secondary" data-action="export">下载完整答案备份</button><button class="secondary" data-action="import">导入备份或朋友的答案</button><button class="secondary" data-action="paste-import">粘贴备份文字来恢复</button><button class="secondary" data-action="journal">复制／下载我的文字手记</button></div><button class="text-link danger" data-action="reset-prompt">重新开始当前填写人的探索</button>`);}
 function profilesDialog(){modal('谁在回答这一轮',`<p>先各自回答，再一起对照。姓名只是本机的区分标签，可以用昵称。</p><form id="profiles-form">${state.profiles.map((p,i)=>`<label>填写人 ${i+1}<input name="name${i}" maxlength="20" value="${escape(p.name)}" required></label>`).join('')}<button class="secondary" type="submit">保存称呼</button></form><div class="button-row">${state.profiles.map((p,i)=>`<button class="${i===state.active?'primary':'secondary'}" data-action="switch" data-id="${i}">${escape(p.name)}${i===state.active?' · 正在填写':''}</button>`).join('')}</div>`);}
 function sourcesDialog(){modal('云南很具体，想象也需要边界',`<p>当前从经典目的地与线路出发，探索当地及附近的具体体验。资料核对于 2026 年 9 月；历史介绍用于认识地方特色，不代表国庆期间开放、票价与景观保证。</p>${regions.map(r=>`<section class="source-region"><h3>${r.name}</h3><p>${escape(r.season)}</p>${r.sources.map(s=>`<a href="${escape(s.url)}" target="_blank" rel="noopener noreferrer">${escape(s.title)}</a>`).join('')}</section>`).join('')}<p>原图鉴覆盖云南 16 个州市。图鉴元素是全年艺术示意，不能直接当成本次国庆可以同时看到的景观。所有场景插画均非真实照片。</p>`,true);}
 function rulesDialog(){modal('建议如何从你的答案里长出来',`<ol class="rules-list"><li><strong>先记录，不急着定义。</strong>场景的第一眼吸引与后续具体选项一起保存。复述只有得到你的确认，才标成“已确认”。自由文字原样保留，不自动打分。</li><li><strong>匹配的是这次的愿望。</strong>山川、湖岸、文化、吃食、休息、陌生感、手作、植物、街头生活各有选项权重。地区特征用 1—5 的编辑评分，按你选择的权重算平均，再换算为 100 分；首选场景加 4 分。</li><li><strong>代价不会被平均掉。</strong>避开高原或明确不去优先于分数；不想依赖天气时，丽江和香格里拉减 5 分。明确改选稳定方向再减 8 分。未知高原意愿只给有条件候选。</li><li><strong>城市越多不自动得分越高。</strong>你明确最不想删掉的地区体验优先保留，但不越过排除与高原边界。其余组合取目的地均分，每次转场再扣 4 分（慢住扣 6 分）。每次转场保守预留一个日程格；慢住每基地至少两个完整活动日。夜数始终等于日历天数减一。</li><li><strong>两个人，先尊重底线。</strong>任一方排除的地区不参与共同建议；共同分为较低个人分的 70% 加个人均分的 30%。它用来开启讨论，不表示已经达成共识。</li><li><strong>没有“心理准确率”。</strong>这些是可解释的编辑规则，不是临床心理量表、读心结果或满意度预测。交通、价格与预约需要另查。</li></ol>`);}
 function editQuestion(id){const p=person();if(p.focus===null)p.focus='unknown';if(id==='altitude'&&!flowFor(p).some(q=>q.id==='altitude')){modal('高原意愿',`<p>此项会影响香格里拉候选，也会影响丽江高处项目。</p>${questionMap.altitude.options.map(o=>`<button class="option" data-action="direct-altitude" data-id="${o.id}"><span><strong>${escape(o.label)}</strong><small>${escape(o.detail)}</small></span></button>`).join('')}`);return;}p.cursor=Math.max(0,flowFor(p).findIndex(q=>q.id===id));$('#dialog').close();navigate('journey');}
 document.addEventListener('click',async e=>{
  const el=e.target.closest('[data-action]');if(!el)return;const {action,id,question}=el.dataset;const p=person();
- if(action==='scroll-corridors'){if(state.view!=='home')navigate('home');$('#regional-routes')?.scrollIntoView({behavior:'smooth',block:'start'});return;}
+ if(action==='begin'){if(p.focus!==null){navigate(p.complete?'results':'journey');return;}p.focus='unknown';p.cursor=0;track('explore_start');navigate('journey');return;}
+ if(action==='entry-hub'){entryDialog();return;}
+ if(action==='scroll-corridors'||action==='classic-directory'){modal('经典目的地与线路',classicExplorer(),true);return;}
+ if(action==='region-directory'){modal('在云南，过具体的一天',regionDirectory(),true);return;}
+ if(action==='atlas-tab'){atlasDialog(id);return;}
  if(action==='classic'){const c=classicById[id];if(c)modal(c.label,classicDialogBody(id),true);return;}
  if(action==='classic-start'){if(!regionById[id]||!classicById[el.dataset.route])return;p.entryRouteId=el.dataset.route;p.corridor=null;p.routeId=null;routeChoice=null;if(p.focus!==id){delete p.answers.mirror;delete p.answers.clarify;}p.focus=id;p.cursor=0;p.complete=false;track('explore_start');$('#dialog').close();navigate('journey');return;}
  if(action==='corridor'){const c=corridorById[id];if(c)modal(c.name,corridorDialogBody(id),true);return;}
@@ -143,14 +149,14 @@ document.addEventListener('click',async e=>{
  if(action==='copy-ai'){try{await navigator.clipboard.writeText($('#ai-prompt').value);track('ai_copy_success');toast('已复制完整提示词与答案，直接粘贴给你常用的 AI。');}catch{$('#ai-prompt').select();toast('请手动复制已选中的内容。');}return;}
  if(action==='download-ai'){download('心向彩云-给AI的旅行探索.txt',$('#ai-prompt').value);toast('已向浏览器发起文字下载。');return;}
  if(action==='souvenir'){await souvenirDialog();return;}
- if(action==='close-resume'){$('#dialog').close();navigate(p.focus?'journey':'home');return;}
+ if(action==='close-resume'){if(p.focus===null){p.focus='unknown';p.cursor=0;track('explore_start');}navigate('journey');return;}
  if(action==='copy-site'){try{await navigator.clipboard.writeText(shareUrl('friend'));track('share_link_copy');toast('公开网页链接已复制。');}catch{toast('公开网址：'+publicUrl);}return;}
  if(action==='share-card'){if(!lastCard)return;track('share_click');const file=new File([lastCard.blob],'心向彩云-我的云南旅行小卡.png',{type:'image/png'});try{if(navigator.canShare?.({files:[file]})){await navigator.share({files:[file],title:'心向彩云 · 我的云南旅行愿望'});track('share_native_success');}else toast('此浏览器暂不支持直接分享图片，可以长按保存后分享。');}catch(err){if(err.name!=='AbortError')toast('请先保存图片，再从相册分享。');}return;}
  if(action==='choose-scene'){p.entryRouteId=null;p.corridor=null;p.routeId=null;routeChoice=null;track('explore_start');if(p.focus!==id){delete p.answers.mirror;delete p.answers.clarify;}p.focus=id;p.cursor=0;p.complete=false;$('#dialog').close();navigate('journey');return;}
  if(action==='answer'){const f=flowFor(p);if(p.answers[question]!==id&&f.findIndex(q=>q.id===question)<f.findIndex(q=>q.id==='mirror')){delete p.answers.mirror;delete p.answers.clarify;}p.answers[question]=id;save();render();return;}
  if(action==='next'){const f=flowFor(p);if(!p.answers[f[p.cursor].id])return;if(p.cursor<f.length-1){p.cursor++;save();render(true);}else{p.complete=true;if(activeResult().hasPreferences)track('explore_complete');navigate('results');}return;}
  if(action==='back'){if(p.cursor){p.cursor--;save();render(true);}else navigate('home');return;}
- if(action==='resume'){navigate(p.focus?'journey':'home');return;}
+ if(action==='resume'){if(p.focus===null){p.focus='unknown';p.cursor=0;track('explore_start');}navigate('journey');return;}
  if(action==='results'){navigate('results');return;}
  if(action==='compare'){navigate('compare');return;}
  if(action==='profiles'){profilesDialog();return;}
@@ -175,7 +181,7 @@ document.addEventListener('click',async e=>{
  if(action==='sources'){sourcesDialog();return;}
  if(action==='inspiration'){if(id==='tea'){regionDialog('jingmai');return;}if(id==='terrace'){regionDialog('yuanyang');return;}const cards={tea:{name:'景迈山：把一杯茶放回它生长的地方',text:'茶树与高树共同生长，传统村寨与茶林相邻。你可以好奇的，不只是哪杯好喝，还有为什么在林下种茶、茶林和生活怎样相处。这里需要单独安排山区进出和接待，不能当作普洱市区顺路停一下。',ask:'如果没有采茶体验，也没有拍到云海，只是看茶林、喝茶、听懂一点村寨生活，你还愿意专程留时间吗？',source:'https://whc.unesco.org/en/list/1665',sourceName:'UNESCO 景迈山古茶林文化景观'},terrace:{name:'元阳：漂亮画面背后的土地与生活',text:'森林、水系、村寨和梯田共同构成持续运作的农业景观。你可以为图案与光线而来，也可以看看人们怎样在山地生活。元阳需要独立安排山区交通；它不是建水市内的一个景点。',ask:'如果田里是当时真实的农事状态，而不是照片里的水镜或金黄，你还想看什么：田埂山势、村寨生活，还是决定等特定季节再来？',source:'https://whc.unesco.org/en/list/1111',sourceName:'UNESCO 红河哈尼梯田文化景观'},gorge:{name:'怒江：沿途也可以是旅行的内容',text:'沿江向前，水声与两岸山势不断改变位置，公路连接村寨和观景点。较长的公路移动本身就是体验的一部分；是否适合，要先看你愿不愿意把时间交给路。',ask:'如果一天有较多时间坐车，换来的是不断变化的峡谷风景，你更想沿路前行，还是到一个喜欢的地方住下来？',source:'https://jtyst.yn.gov.cn/xyxw/202601/t20260105_3431033.html',sourceName:'云南省交通运输厅：怒江美丽公路'}};const d=cards[id];modal(d.name,`<span class="tag">延伸灵感 · 暂不参与核心匹配</span><p class="region-story">${escape(d.text)}</p><blockquote class="mirror-draft">${escape(d.ask)}</blockquote><p>先把这份好奇记住，再另核交通、季节与时间。本页不保证采茶、云海、梯田水镜或具体道路条件。</p><p><a href="${d.source}" target="_blank" rel="noopener noreferrer">${d.sourceName}</a></p><button class="secondary" data-action="atlas">看看它在云南哪里</button>`);return;}
  if(action==='atlas-original'){modal('云南山水风物图鉴 · 原图',`<p>双指或浏览器缩放可查看细节。原图按需加载，保留你喜欢的笔触与文字。</p><div class="atlas-original">${sceneImage('yunnan-atlas',{fullResolution:true,priority:true,alt:'云南山水风物艺术图鉴原图'})}</div><a class="text-link" href="${originalImageUrl('yunnan-atlas')}" target="_blank" rel="noopener">单独打开原图 ↗</a>`,true);return;}
- if(action==='atlas'){modal('云南山水风物图鉴',`<div class="atlas-art-preview">${sceneImage('yunnan-atlas',{alt:'云南山水风物艺术图鉴',sizes:'(max-width:650px) 90vw, 840px'})}<button class="secondary" data-action="atlas-original">放大看高清原图 ↗</button></div><p>先看方位，再看风物。图鉴为全年艺术示意；不代表国庆能同时看到所有景观。</p><iframe class="atlas-frame" src="atlas.html?v=20260927-standalone" title="云南16州市可缩放互动风物地图"></iframe><div class="button-row">${regions.map(r=>`<button class="secondary" data-action="region" data-id="${r.id}">${r.name}的一天</button>`).join('')}</div>`,true);return;}
+ if(action==='atlas'){atlasDialog();return;}
  if(action==='reset-prompt'){modal('重新开始这位填写人的探索',`<p>只重置“${escape(p.name)}”的当前答案。可先下载备份，另一位的答案会保留。</p><div class="button-row"><button class="secondary" data-action="export">先下载备份</button><button class="primary" data-action="reset">确认重新开始</button></div>`);return;}
  if(action==='reset'){const name=p.name;state.profiles[state.active]=blankSession().profiles[0];person().name=name;$('#dialog').close();navigate('home');return;}
  if(action==='restore-backup'){state=windowPendingImport;routeChoice=person().routeId||null;windowPendingImport=null;$('#dialog').close();save();render(true);toast('已恢复这份备份。');return;}

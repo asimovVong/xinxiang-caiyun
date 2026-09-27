@@ -1,4 +1,4 @@
-import {additionalGuides,placeById} from './regional-model.js?v=20260927-4';
+import {additionalGuides,placeById} from './regional-model.js?v=20260927-5';
 // Editorial day ideas, not bookable offers. Coordinates are approximate regional
 // anchors for the overview map, not attraction entrances or navigation points.
 const daliOldTownDay = {

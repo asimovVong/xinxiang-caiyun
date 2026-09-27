@@ -1,5 +1,5 @@
-import {getDayGuide} from './experiences.js?v=20260927-4';
-import {recommend,itineraryFor,compareProfiles,mirrorFor,regionById,questionMap} from './journey.js?v=20260927-4';
+import {getDayGuide} from './experiences.js?v=20260927-5';
+import {recommend,itineraryFor,compareProfiles,mirrorFor,regionById,questionMap} from './journey.js?v=20260927-5';
 const label=(q,id)=>questionMap[q]?.options.find(o=>o.id===id)?.label;
 function answerLabel(p,q,o){
  if(q.id!=='anchor'||!['primary','contrast'].includes(o.id))return o.label;

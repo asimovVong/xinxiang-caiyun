@@ -1,4 +1,4 @@
-import {regionById,questionMap,axisNames} from './journey.js?v=20260927-4';
+import {regionById,questionMap,axisNames} from './journey.js?v=20260927-5';
 const themes={dali:'湖岸与白族村落',shangrila:'藏地与高原',kunming:'植物与春城日常',jianshui:'古城手作与风味',mangshi:'早市与边城风味',fuxian:'湖边留白',lijiang:'纳西村落与远山',tengchong:'侨乡与温泉',xishuangbanna:'热带植物与傣味'};
 export function reportFor(profile,result,route,settings){
  const active=id=>result.selected.find(s=>s.question.id===id)?.option;

@@ -1,4 +1,4 @@
-import {corridors, corridorById} from './corridors.js?v=20260927-4';
+import {corridors, corridorById} from './corridors.js?v=20260927-5';
 
 export const placeById = Object.fromEntries(corridors.flatMap(c => c.places.map(p => [p.id,{...p,corridorId:c.id}])));
 export function corridorBaseIds(id) {

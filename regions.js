@@ -1,4 +1,4 @@
-import {additionalRegions,regionalRouteTemplates} from './regional-model.js?v=20260927-4';
+import {additionalRegions,regionalRouteTemplates} from './regional-model.js?v=20260927-5';
 export const regions = [
   {
     "id": "dali",

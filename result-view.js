@@ -1,10 +1,10 @@
-import {regionById,itineraryFor} from './journey.js?v=20260927-4';
-import {reportFor} from './report.js?v=20260927-4';
-import {regionGuides,getDayGuide} from './experiences.js?v=20260927-4';
-import {routeMap,dayRhythm,sceneDetail} from './visuals.js?v=20260927-4';
-import {nearbySection} from './corridor-view.js?v=20260927-4';
-import {sceneImage} from './media.js?v=20260927-4';
-import {entryRouteComparison} from './classic-view.js?v=20260927-4';
+import {regionById,itineraryFor} from './journey.js?v=20260927-5';
+import {reportFor} from './report.js?v=20260927-5';
+import {regionGuides,getDayGuide} from './experiences.js?v=20260927-5';
+import {routeMap,dayRhythm,sceneDetail} from './visuals.js?v=20260927-5';
+import {nearbySection} from './corridor-view.js?v=20260927-5';
+import {sceneImage} from './media.js?v=20260927-5';
+import {entryRouteComparison} from './classic-view.js?v=20260927-5';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const photo=(id,cls='',lazy=true)=>sceneImage(regionById[id]?.visualBase||regionById[id]?.visual||id,{className:cls,alt:(regionById[id]?.name||'云南')+'所在区域情境插画，非当地实景照片',priority:!lazy,sizes:'(max-width:650px) 90vw, (max-width:1000px) 50vw, 640px'});
 export function renderDay(day){

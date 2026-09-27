@@ -1,5 +1,5 @@
-import qrcode from './vendor/qrcode.mjs?v=20260927-4';
-import {scenes, regionById} from './journey.js?v=20260927-4';
+import qrcode from './vendor/qrcode.mjs?v=20260927-5';
+import {scenes, regionById} from './journey.js?v=20260927-5';
 
 const WIDTH=1080, HEIGHT=1600;
 const COLORS={paper:'#f6fafb',ink:'#173f5f',teal:'#087b91',muted:'#5d7888',line:'#c8dce2',white:'#ffffff'};

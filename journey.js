@@ -1,6 +1,6 @@
-import {regions, routeTemplates} from './regions.js?v=20260927-4';
-import {corridorById} from './corridors.js?v=20260927-4';
-import {regionalScenes,regionalQuestions,regionalActivityPriority,placeById,corridorBaseIds,isHighland} from './regional-model.js?v=20260927-4';
+import {regions, routeTemplates} from './regions.js?v=20260927-5';
+import {corridorById} from './corridors.js?v=20260927-5';
+import {regionalScenes,regionalQuestions,regionalActivityPriority,placeById,corridorBaseIds,isHighland} from './regional-model.js?v=20260927-5';
 
 export const regionById = Object.fromEntries(regions.map(r => [r.id, r]));
 export const axisNames = {mountain:'山川的尺度',lake:'湖岸留白',heritage:'文化与故事',food:'地方风味',rest:'自在停留',novelty:'日常之外',craft:'亲手参与',forest:'植物与浓绿',street:'街头生活'};

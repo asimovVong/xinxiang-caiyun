@@ -1,4 +1,4 @@
-import {analyticsConfig} from './analytics-config.js?v=20260927-4';
+import {analyticsConfig} from './analytics-config.js?v=20260927-5';
 
 const PUBLIC_URL = 'https://asimovvong.github.io/xinxiang-caiyun/';
 const PREFERENCE_KEY = 'caiyun-analytics-enabled-v1';

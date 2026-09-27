@@ -1,5 +1,5 @@
-import {corridors} from './corridors.js?v=20260927-4';
-import {corridorMap} from './corridor-view.js?v=20260927-4';
+import {corridors} from './corridors.js?v=20260927-5';
+import {corridorMap} from './corridor-view.js?v=20260927-5';
 // A geographic orientation aid, not a navigation map. Coordinates reuse the local atlas.
 const points = {
   dali: ['大理',100.197,25.79,13,4], shangrila: ['香格里拉',99.7065,27.8269,13,4],

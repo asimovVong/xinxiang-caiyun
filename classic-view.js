@@ -1,5 +1,5 @@
-import {regionById,scenes} from './journey.js?v=20260927-4';
-import {sceneImage} from './media.js?v=20260927-4';
+import {regionById,scenes} from './journey.js?v=20260927-5';
+import {sceneImage} from './media.js?v=20260927-5';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const classicRoutes=[
  {id:'dali',ids:['dali'],label:'大理',mood:'苍山洱海，慢慢住',hook:'同样是大理，你想环海看风景，还是在喜洲的街边坐下来？',tags:'苍山 · 洱海 · 喜洲 · 周城',cost:'少换住，仍要取舍环湖距离与热门街区的人流。',region:'湖岸与白族生活'},

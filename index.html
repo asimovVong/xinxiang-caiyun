@@ -13,21 +13,22 @@
   <meta property="og:url" content="https://asimovvong.github.io/xinxiang-caiyun/">
   <meta property="og:image" content="https://asimovvong.github.io/xinxiang-caiyun/assets/dali-960.webp">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=20260927-4">
-  <link rel="stylesheet" href="results.css?v=20260927-4">
-  <link rel="stylesheet" href="regional.css?v=20260927-4">
+  <link rel="stylesheet" href="style.css?v=20260927-5">
+  <link rel="stylesheet" href="results.css?v=20260927-5">
+  <link rel="stylesheet" href="regional.css?v=20260927-5">
 </head>
 <body>
   <a class="skip-link" href="#main">跳到探索内容</a>
   <header class="site-head">
     <button class="brand" data-action="home" aria-label="心向彩云，回到场景选择"><span class="brand-glyph">云</span><span>心向彩云<small>一场关于向往的旅行</small></span></button>
-    <nav aria-label="主导航"><button data-action="scroll-corridors">经典线路</button><button data-action="atlas">云南图鉴</button><button data-action="compare">同行对照</button><button data-action="journal">旅行手记</button></nav>
+    <nav aria-label="主导航"><button data-action="begin">开始探寻</button><button data-action="classic-directory">经典线路</button><button data-action="atlas">互动地图</button><button class="nav-all" data-action="entry-hub">所有入口 <span aria-hidden="true">＋</span></button></nav>
     <button class="profile-button" data-action="profiles"><span class="avatar" id="avatar">我</span><span id="profile-name">我</span><span aria-hidden="true">⌄</span></button>
   </header>
   <main id="main" tabindex="-1"><div class="startup-message"><h1>去云南，你想过哪一种日子？</h1><p>正在打开你的云南探索。</p><p>如果你是直接双击本地文件，请使用在线版，回答功能需要网页环境。</p><a href="https://asimovvong.github.io/xinxiang-caiyun/">打开心向彩云在线版</a></div></main>
   <footer class="site-foot"><span>云南很大。你的假期，不必装下全部。</span><div><button data-action="sources">资料与季节</button><button data-action="rules">建议怎么算</button><button data-action="storage">保存与导出</button><button data-action="privacy">隐私与统计</button></div></footer>
-  <dialog id="dialog"><div class="dialog-head"><h2 id="dialog-title"></h2><button data-action="close" aria-label="关闭弹窗">✕</button></div><div id="dialog-body"></div></dialog>
+  <nav class="mobile-dock" aria-label="快捷入口"><button data-action="begin"><span aria-hidden="true">↗</span>探寻</button><button data-action="atlas"><span aria-hidden="true">山</span>地图</button><button data-action="classic-directory"><span aria-hidden="true">路</span>线路</button><button data-action="entry-hub"><span aria-hidden="true">＋</span>所有入口</button></nav>
+  <dialog id="dialog" aria-labelledby="dialog-title"><div class="dialog-head"><h2 id="dialog-title" tabindex="-1"></h2><div class="dialog-head-actions"><button class="dialog-entry" data-action="entry-hub">所有入口</button><button data-action="close" aria-label="关闭弹窗">✕</button></div></div><div id="dialog-body"></div></dialog>
   <input id="import-input" type="file" accept="application/json,.json" hidden>
   <div id="toast" role="status" aria-live="polite"></div>
-  <script type="module" src="app.js?v=20260927-4"></script>
+  <script type="module" src="app.js?v=20260927-5"></script>
 </body></html>

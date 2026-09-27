@@ -1,6 +1,6 @@
-import {corridors,corridorById,getCorridorsForBases} from './corridors.js?v=20260927-4';
-import {regionById,scenes} from './journey.js?v=20260927-4';
-import {sceneImage} from './media.js?v=20260927-4';
+import {corridors,corridorById,getCorridorsForBases} from './corridors.js?v=20260927-5';
+import {regionById,scenes} from './journey.js?v=20260927-5';
+import {sceneImage} from './media.js?v=20260927-5';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const label={daytrip:'住原处，专程往返',replacement:'替换一个完整日',overnight:'需要另选住宿基地'};
 const art={dalibaizu:'dali',northwest:'shangrila',central:'fuxian',honghe:'jianshui',west:'tengchong',south:'xishuangbanna'};
