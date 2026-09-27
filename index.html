@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#173f5f">
+  <title>心向彩云 · 去云南，你想过哪一种日子？</title>
+  <meta name="description" content="从洱海湖岸、藏地村落到芒市早市，用具体场景和逐层追问，慢慢确认你这一次真正想要的云南。可保存答案、与同行人对照，生成有取舍的旅行草案。">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到探索内容</a>
+  <header class="site-head">
+    <button class="brand" data-action="home" aria-label="心向彩云，回到场景选择"><span class="brand-glyph">云</span><span>心向彩云<small>一场关于向往的旅行</small></span></button>
+    <nav aria-label="主导航"><button data-action="atlas">云南图鉴</button><button data-action="compare">同行对照</button><button data-action="journal">旅行手记</button></nav>
+    <button class="profile-button" data-action="profiles"><span class="avatar" id="avatar">我</span><span id="profile-name">我</span><span aria-hidden="true">⌄</span></button>
+  </header>
+  <main id="main" tabindex="-1"></main>
+  <footer class="site-foot"><span>云南很大。你的假期，不必装下全部。</span><div><button data-action="sources">资料与季节</button><button data-action="rules">建议怎么算</button><button data-action="storage">保存与导出</button></div></footer>
+  <dialog id="dialog"><div class="dialog-head"><h2 id="dialog-title"></h2><button data-action="close" aria-label="关闭弹窗">✕</button></div><div id="dialog-body"></div></dialog>
+  <input id="import-input" type="file" accept="application/json,.json" hidden>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="app.js"></script>
+</body></html>
