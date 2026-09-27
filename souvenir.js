@@ -1,5 +1,5 @@
-import qrcode from './vendor/qrcode.mjs';
-import {scenes, regionById} from './journey.js';
+import qrcode from './vendor/qrcode.mjs?v=20260927-4';
+import {scenes, regionById} from './journey.js?v=20260927-4';
 
 const WIDTH=1080, HEIGHT=1600;
 const COLORS={paper:'#f6fafb',ink:'#173f5f',teal:'#087b91',muted:'#5d7888',line:'#c8dce2',white:'#ffffff'};
@@ -46,11 +46,13 @@ function cropImage(ctx,image,x,y,w,h){
   const sw=w/scale,sh=h/scale;
   ctx.drawImage(image,(image.naturalWidth-sw)/2,(image.naturalHeight-sh)/2,sw,sh,x,y,w,h);
 }
-function qrUrl(publicUrl){
+export function qrUrl(publicUrl){
   let url;try{url=new URL(publicUrl);}catch{throw new Error('请先提供公开网页地址，才能生成分享二维码。');}
   if(!['https:','http:'].includes(url.protocol)||url.username||url.password||url.hostname==='localhost'||/^(127\.|0\.0\.0\.0$|\[::1\]$)/.test(url.hostname))throw new Error('分享二维码需要公开的 http 或 https 网页地址。');
-  // A souvenir points to the public experience, never to serialized answers or a tracking query.
+  // Keep only our fixed card campaign; never serialize answers or arbitrary URL data.
+  const cardCampaign=url.origin==='https://asimovvong.github.io'&&url.pathname==='/xinxiang-caiyun/'&&url.searchParams.get('utm_source')==='card'&&url.searchParams.get('utm_campaign')==='card';
   url.search='';url.hash='';
+  if(cardCampaign){url.searchParams.set('utm_source','card');url.searchParams.set('utm_campaign','card');}
   if(url.href.length>500)throw new Error('公开网址过长，请使用网站首页地址。');
   return url;
 }

@@ -1,3 +1,5 @@
+import {corridors} from './corridors.js?v=20260927-4';
+import {corridorMap} from './corridor-view.js?v=20260927-4';
 // A geographic orientation aid, not a navigation map. Coordinates reuse the local atlas.
 const points = {
   dali: ['大理',100.197,25.79,13,4], shangrila: ['香格里拉',99.7065,27.8269,13,4],
@@ -6,6 +8,7 @@ const points = {
   fuxian: ['抚仙湖',102.883,24.514,-12,17], jianshui: ['建水',102.83,23.63,-12,4],
   xishuangbanna: ['西双版纳',100.798,22.002,13,4]
 };
+for(const c of corridors)for(const b of c.stayBases)if(!points[b.id])points[b.id]=[b.name,b.coordinates[0],b.coordinates[1],12,4];
 const known = id => typeof id === 'string' && Object.hasOwn(points,id);
 const esc = value => String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pos = id => [60+(points[id][1]-98.1)*57,42+(28.15-points[id][2])*50];
@@ -19,7 +22,7 @@ const tree = (x,y,r=18) => `<path d="M${x} ${y}v30" stroke="#647e63" stroke-widt
 export function routeMap(ids=[]){
   const selected = [...new Set(Array.isArray(ids)?ids.filter(known):[])];
   const connection = selected.length>1?path(selected.map((id,i)=>`${i?'L':'M'}${pos(id).join(' ')}`).join(' '),'none','#117e96',3):'';
-  const markers = Object.entries(points).map(([id,[name,,,dx,dy]])=>{
+  const markers = Object.entries(points).filter(([id])=>selected.includes(id)||['dali','shangrila','lijiang','tengchong','mangshi','kunming','fuxian','jianshui','xishuangbanna'].includes(id)).map(([id,[name,,,dx,dy]])=>{
     const [x,y]=pos(id), n=selected.indexOf(id), chosen=n>=0, gateway=id==='kunming'&&!chosen;
     return `<g><circle cx="${x}" cy="${y}" r="${chosen?10:gateway?7:4}" fill="${chosen?'#0e758b':gateway?'#fff':'#9eb4bd'}" stroke="${gateway?'#728c98':'#fff'}" stroke-width="${chosen?2:1.5}"/>${chosen?label(x,y+3.5,n+1,'#fff',10):''}${label(x+dx,y+dy,name,chosen?'#123f58':'#617e8a',chosen?14:12,dx<0?'end':'start')}</g>`;
   }).join('');
@@ -46,7 +49,7 @@ const sceneDrawings = {
 };
 
 export function sceneDetail(id,variant='full'){
-  if(!Object.hasOwn(sceneDrawings,id))return '';
+  if(!Object.hasOwn(sceneDrawings,id)){const c=corridors.find(c=>c.stayBases.some(b=>b.id===id));return c?corridorMap(c,[id]):'';}
   const scene=sceneDrawings[id];
   return `<figure class="scene-detail${variant==='compact'?' is-compact':''}"><figcaption><strong>${scene.title}</strong></figcaption>${svg(scene.title,scene.body(),id==='tengchong'?'0 0 360 184':'0 0 360 178')}<p>${scene.caption}</p><span class="scene-detail-note">体验关系示意 · 非实景、非距离比例</span></figure>`;
 }

@@ -1,4 +1,5 @@
-import {recommend,itineraryFor,compareProfiles,mirrorFor,regionById,questionMap} from './journey.js';
+import {getDayGuide} from './experiences.js?v=20260927-4';
+import {recommend,itineraryFor,compareProfiles,mirrorFor,regionById,questionMap} from './journey.js?v=20260927-4';
 const label=(q,id)=>questionMap[q]?.options.find(o=>o.id===id)?.label;
 function answerLabel(p,q,o){
  if(q.id!=='anchor'||!['primary','contrast'].includes(o.id))return o.label;
@@ -6,8 +7,12 @@ function answerLabel(p,q,o){
  return regionById[id]?regionById[id].name+'：'+(label(id+'_pull',p.answers[id+'_pull'])||'这份地区体验'):o.label;
 }
 function profileRecord(p,settings,index,routeId){
- const r=recommend(p,settings),route=r.available.find(t=>t.id===routeId)||r.primary;
+ const r=recommend(p,settings),route=r.available.find(t=>t.id===(routeId||p.routeId))||r.primary;
  const lines=[`【填写人 ${index+1}：${p.name}】`,`第一眼场景：${regionById[p.focus]?.name||(p.focus==='unknown'?'还说不清':'尚未填写')}`,`明确排除：${p.excluded.map(id=>regionById[id].name).join('、')||'未明确排除地区（不等于全部同意）'}`];
+ const entryRoute=r.routes.find(t=>t.id===r.entryRouteId);
+ if(entryRoute)lines.push('最初想比较的经典线：'+entryRoute.name+'（仅代表入口兴趣，不是最终决定）'+(entryRoute.blocked.length?'；当前约束下暂不适用：'+entryRoute.blocked.join('；'):'；尚未核实具体交通、开放及价格。'));
+ lines.push('区域探索意向：'+(r.corridor?r.corridor.name+'（用来优先比较，不是最终决定）':'尚未选择区域方向'));
+ lines.push('主动选择的同基地支线：'+(r.excursionSelections.length?r.excursionSelections.map(place=>place.name+'（'+regionById[place.anchorBase].name+'基地，替换原有完整停留日）').join('；'):'未选择，不自动把近邻景点加进去'));
  lines.push('以下按当前探索路径列出；这是现存有效回答，不是修改过程的完整历史。');
  r.selected.forEach(({question,option},i)=>lines.push(`${i+1}. ${question.title}\n回答：${option?answerLabel(p,question,option):'尚未填写'}${option?.detail?'\n选项背景：'+option.detail:''}${p.notes[question.id]?'\n本人原话：'+p.notes[question.id]:''}`));
  const activeIds=new Set(r.selected.map(x=>x.question.id));
@@ -19,7 +24,8 @@ function profileRecord(p,settings,index,routeId){
  lines.push(`网页生成的旅行风格：${r.style}（仅本次偏好，不是固定人格）`);
  lines.push('规则候选：'+(r.hasPreferences?r.ranked.filter(d=>!d.excluded).slice(0,4).map(d=>`${d.name} ${d.score}/100${d.conditional?'，高原意愿待确认':''}`).join('；'):'尚未形成有效方向'));
  if(r.protectedRegion)lines.push('本人最想保住的地区体验：'+regionById[r.protectedRegion].name+'，仍需遵守排除项与身体条件。');
- if(route)lines.push(`网页当前路线草案：${route.name}；${route.fullDays}个完整活动日；${route.moves}次跨地区转场${route.conditional?'；高原条件待确认':''}。\n`+itineraryFor(route,r,settings).map(d=>`D${d.day} ${d.title}：${d.detail}`).join('\n'));
+ if(route?.excursionStatus?.length)lines.push('当前路线的支线处理：'+route.excursionStatus.map(x=>x.name+'：'+(x.status==='applied'?'已放入日程草案':'未放入本路线')+'；'+x.reason+(x.conditional?' 高原意愿仍待确认。':'')).join('；'));
+ if(route)lines.push(`网页当前路线草案：${route.name}；${route.fullDays}个完整活动日；${route.moves}次跨地区转场${route.conditional?'；高原条件待确认':''}。\n`+itineraryFor(route,r,settings).map(d=>{const guide=getDayGuide(d);return `D${d.day} ${d.title}：${d.detail}`+(guide?`\n上午：${guide.morning}\n下午：${guide.afternoon}\n晚上：${guide.evening}\n吃什么：${guide.food}\n替代安排：${guide.backup}`:'');}).join('\n'));
  lines.push('仍未知：'+(r.unknowns.map(q=>q.title).join('；')||'实际交通、开放、天气、价格与预约'));
  return lines.join('\n\n');
 }

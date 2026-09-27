@@ -1,3 +1,4 @@
+import {additionalRegions,regionalRouteTemplates} from './regional-model.js?v=20260927-4';
 export const regions = [
   {
     "id": "dali",
@@ -613,3 +614,6 @@ export const routeTemplates = [
     "tradeoff": "一次公路转场，实际交通另核；不把瑞丽或大理顺手塞进行程。"
   }
 ];
+
+regions.push(...additionalRegions);
+routeTemplates.push(...regionalRouteTemplates);

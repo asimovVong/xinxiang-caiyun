@@ -1,4 +1,6 @@
-import {regions, routeTemplates} from './regions.js';
+import {regions, routeTemplates} from './regions.js?v=20260927-4';
+import {corridorById} from './corridors.js?v=20260927-4';
+import {regionalScenes,regionalQuestions,regionalActivityPriority,placeById,corridorBaseIds,isHighland} from './regional-model.js?v=20260927-4';
 
 export const regionById = Object.fromEntries(regions.map(r => [r.id, r]));
 export const axisNames = {mountain:'山川的尺度',lake:'湖岸留白',heritage:'文化与故事',food:'地方风味',rest:'自在停留',novelty:'日常之外',craft:'亲手参与',forest:'植物与浓绿',street:'街头生活'};
@@ -13,6 +15,7 @@ export const scenes = {
   tengchong:{title:'在侨乡的巷子里慢下来',sub:'腾冲 · 和顺与地热',image:'tengchong',sensory:'和顺的院子、远处的田园、热海地热景观和温泉，是需要分开安排的几段体验。先选你愿意真正停留的那一段。',hook:'你更需要热气里的放松，还是一段侨乡故事？',color:'#778852'},
   xishuangbanna:{title:'走进一整个浓绿的世界',sub:'西双版纳 · 热带植物与傣味',image:'xishuangbanna',sensory:'叶子比想象中大，植物园里一条路就能走很久。回到城里吃一顿傣味。湿热、降雨和往返园区的交通，也属于这一种云南。',hook:'你是想认识植物，还是想换一种气候和生活节奏？',color:'#28694f'}
 };
+Object.assign(scenes,regionalScenes);
 const o=(id,label,detail,weights={},echo='')=>({id,label,detail,weights,echo});
 const unsure=()=>o('unknown','我还说不清','先留着，不用为了完成问卷勉强选。',{},'这项先留白。还没确定的愿望，也值得被认真保留。');
 const q=(id,title,context,scene,options,stage='深一点')=>({id,title,context,scene,options:[...options,unsure()],stage});
@@ -110,15 +113,33 @@ o('curiosity','不断遇到值得好奇的小事','可以在同一地方慢慢�
 o('participation','真正参与过一件事情','动手、听懂、学会一点点，而非路过。',{craft:4,heritage:3},'参与和理解会作为行程重点。'),
 o('awe','被自然的尺度震住','想亲身站在山水里。',{mountain:4,lake:3},'保住一次开阔的自然体验，再讨论怎样让其余时间舒服。')]),
 q('contrast','再借一个不同的下午，看看心动会不会变化。','选一个还舍不得放下的画面。它不等于“又要多去一个地方”，我们先比较愿望。','mangshi',[
-...['dali','shangrila','mangshi','jianshui','kunming','fuxian','lijiang'].map(id=>o(id,scenes[id].title,scenes[id].sub,{},'先走进这个场景，再决定它是替代、补充，还是可以留到下次。')),
+...Object.keys(scenes).map(id=>o(id,scenes[id].title,scenes[id].sub,{},'先走进这个场景，再决定它是替代、补充，还是可以留到下次。')),
 o('none','先不加，我想把刚才的方向想透','少一个候选，也是一种清晰。',{},'先把一条主线想清楚。结果仍会展示其他可能，但不会假装你都想去。')],'对照'),
 q('anchor','假期只够保住一段，你最不想删掉哪一种体验？','前面说了很多喜欢。现在看哪一种如果失去，会让这次旅行最不像你。它会优先于平均分，但不会越过你明确的边界。','dali',[
 o('primary','最初那个让我停下来的画面','把第一份心动里的具体体验保住。',{},'这份体验会成为建议的主线。其他地方分数再高，也不能偷偷替代它。'),
 o('contrast','后来对照时出现的那份心动','我发现另一个下午更不舍得放掉。',{},'对照改变了你的优先级。这正是探索有用的地方。'),
 o('need','地点可以换，过日子的方式不能丢','先保护节奏和感受，再选能承接它的地方。',{},'那么主线是你想怎样过，而不是必须到某座城。结果会继续比较不同地点。')],'取舍')
 );
+questions.push(
+q('tengchong_pull','和顺院落、地热与温泉，哪一段值得你专门停下？','腾冲几个片区分散；看热海地热景观与泡温泉是不同安排，不能用一张门票或半天时间打包。','tengchong',[
+o('heshun','想听懂和顺侨乡的故事','院落、石巷、田边与普通日常。',{heritage:4,street:3},'院落与生活会成为这段的重点，不自动加上火山和温泉全套。'),
+o('geothermal','想近看地热景观怎样形成','愿意为热海单独留一天。',{novelty:4,mountain:2},'你想观察地热，泡汤不必成为附加任务；开放路线与交通另核。'),
+o('soak','想找个舒服的地方泡汤休息','先核设施、票务和适合自己的条件。',{rest:5},'休息是目标。不会把泡汤的愿望自动改成走遍地热景区。')]),
+q('tengchong_depth','腾冲只保留一个完整白天，你想怎样过？','和顺、热海与北海湿地分属不同方向；国庆不保证银杏已黄，也不保证某一片湿地景色。','tengchong',[
+o('story','留在和顺看院落、吃饭、喝茶','不用为了项目丰富而离开喜欢的片区。',{heritage:4,street:2,rest:2},'先把侨乡的一天过完整，其他片区可留作下次。'),
+o('rest','以休息为主，有合适温泉再去','报价和预约不合适，住处附近慢逛也可以。',{rest:5},'温泉是经过确认后的一种休息方式，不是必有项目。'),
+o('wetland','想把目光交给北海湿地','只在开放区域观察水面与植物。',{forest:3,lake:3},'湿地可以成为唯一重点；热海不会同时塞进这一天。')]),
+q('xishuangbanna_pull','版纳最吸引你的，是巨叶、村寨，还是一顿傣味？','景洪、勐仑植物园与勐罕村寨不是一个步行片区。一次只能认真选一段日常。','xishuangbanna',[
+o('plants','想认一认从没见过的热带植物','愿意看标牌、停下来观察。',{forest:5,novelty:2},'植物园会获得一个完整白天，往返与园内接驳也算时间。'),
+o('dai','想走近傣族建筑和生活','在明确接待的村寨看普通的一天。',{heritage:4,street:3},'我们会把真实接待和文化空间放在前面，不把节庆表演当成日常保证。'),
+o('slow','想换一种气候，吃饭、午休、慢走','不想每天都从市区长途往返。',{rest:4,food:3},'热带生活的节奏也值得专门来一次，不需要每天都去雨林。')]),
+q('xishuangbanna_depth','如果只剩一个白天，你愿意把交通花在哪里？','勐仑植物园专程往返、勐罕村寨与景洪城市生活，各有自己的时间成本。十月仍需考虑湿热和阵雨。','xishuangbanna',[
+o('garden','留给勐仑植物园的一小部分','不追求一天走完东西区。',{forest:5},'少走一些园区，给观察与休息留位置；不再追加夜市任务。'),
+o('village','留给勐罕一处明确接待的村寨','先核位置、开放与往返交通。',{heritage:4,street:3},'用这一整天了解村寨，不把它附加在植物园之后。'),
+o('city','就留在景洪，吃一顿傣味再午休','夜市是可选，不是全体人的旅行目标。',{rest:4,food:3,street:2},'行程会保留城市生活日，园区与村寨成为可替换的愿望。')]),
+...regionalQuestions);
 export const questionMap=Object.fromEntries(questions.map(x=>[x.id,x]));
-export function blankProfile(name='我'){return {name,focus:null,answers:{},notes:{},excluded:[],cursor:0,complete:false};}
+export function blankProfile(name='我'){return {name,focus:null,corridor:null,excursions:{},routeId:null,entryRouteId:null,answers:{},notes:{},excluded:[],cursor:0,complete:false};}
 export function blankSession(){return {version:2,active:0,profiles:[blankProfile('我'),blankProfile('同行者')],settings:{days:7,travelDays:2,maxBases:2,budget:null},view:'home'};}
 export function flowFor(p){
   const ids=questionMap[p.focus+'_pull']?[p.focus+'_pull',p.focus+'_depth']:['memory'];
@@ -128,7 +149,7 @@ export function flowFor(p){
   const contrast=p.answers.contrast;
   if(contrast&&contrast!==p.focus&&questionMap[contrast+'_pull'])ids.push(contrast+'_pull',contrast+'_depth');
   ids.push('food','rest','weather','transfer');
-  if(['shangrila','lijiang'].includes(p.focus)||['shangrila','lijiang'].includes(contrast)||p.answers.memory==='nature')ids.push('altitude');
+  if(['shangrila','lijiang'].includes(p.focus)||['shangrila','lijiang'].includes(contrast)||isHighland(regionById[p.focus])||isHighland(regionById[contrast])||Object.values(p.excursions||{}).some(id=>isHighland(placeById[id]))||p.answers.memory==='nature')ids.push('altitude');
   ids.push('crowd','anchor');
   if((p.answers.rest==='yes'||p.answers.need==='restore'||p.answers.need==='together')&&p.answers.transfer==='three')ids.push('pace_conflict');
   if((p.focus==='shangrila'||contrast==='shangrila')&&p.answers.shangrila_depth==='image'&&p.answers.weather==='avoid')ids.push('weather_conflict');
@@ -161,9 +182,9 @@ export function recommend(p,settings){
     const raw=hasPreferences?Object.entries(weights).reduce((s,[k,v])=>s+v*r.traits[k],0)/total/5*100:null;
     const firstImpression=raw!==null&&p.focus===r.id?4:0;
     const penalty=(p.answers.weather==='avoid'&&['shangrila','lijiang'].includes(r.id)?5:0)+(activeIds.has('weather_conflict')&&p.answers.weather_conflict==='other'&&['shangrila','lijiang'].includes(r.id)?8:0);
-    const excluded=p.excluded.includes(r.id)||(r.id==='shangrila'&&p.answers.altitude==='avoid');
+    const excluded=p.excluded.includes(r.id)||(isHighland(r)&&p.answers.altitude==='avoid');
     const evidence=selected.filter(({question,option})=>option&&Object.keys(option.weights).length&&!(r.id!=='shangrila'&&((question.id==='shangrila_pull'&&option.id==='culture')||(question.id==='shangrila_depth'&&option.id==='life')))).map(({question,option})=>({question:question.title,answer:option.label,echo:option.echo,fit:Object.entries(option.weights).reduce((s,[k,v])=>s+v*r.traits[k],0)/Object.values(option.weights).reduce((a,b)=>a+b,0)})).filter(e=>e.fit>=3.5).sort((a,b)=>b.fit-a.fit).slice(0,3);
-    return {...r,score:raw===null?null:Math.max(0,Math.min(100,Math.round(raw+firstImpression-penalty))),raw,firstImpression,penalty,excluded,evidence,conditional:r.id==='shangrila'&&p.answers.altitude!=='willing'};
+    return {...r,score:raw===null?null:Math.max(0,Math.min(100,Math.round(raw+firstImpression-penalty))),raw,firstImpression,penalty,excluded,evidence,conditional:isHighland(r)&&p.answers.altitude!=='willing'};
   }).sort((a,b)=>Number(a.excluded)-Number(b.excluded)||(b.score||0)-(a.score||0));
   const byId=Object.fromEntries(ranked.map(r=>[r.id,r]));
   const pace=paceFor(p), min=pace==='restful'?2:1;
@@ -178,17 +199,26 @@ export function recommend(p,settings){
     return {...t,ids,name:ids.map(id=>byId[id].name).join(' ＋ '),score,blocked,moves,fullDays,conditional:ids.some(id=>byId[id].conditional),min};
   }).sort((a,b)=>(b.score||0)-(a.score||0)||a.moves-b.moves);
   const available=routes.filter(r=>!r.blocked.length);
-  const primary=hasPreferences?((protectedRegion&&(available.find(r=>r.ids.includes(protectedRegion)&&!r.conditional)||available.find(r=>r.ids.includes(protectedRegion))))||available.find(r=>!r.conditional)||available[0]||null):null;
+  const corridor=Object.hasOwn(corridorById,p.corridor)?corridorById[p.corridor]:null;
+  const corridorBases=new Set(corridorBaseIds(p.corridor));
+  routes.forEach(route=>{route.inSelectedCorridor=!!corridor&&route.ids.every(id=>corridorBases.has(id));});
+  const pick=options=>options.find(r=>r.inSelectedCorridor&&!r.conditional)||options.find(r=>r.inSelectedCorridor)||options.find(r=>!r.conditional)||options[0]||null;
+  const protectedRoutes=protectedRegion?available.filter(r=>r.ids.includes(protectedRegion)):[];
+  const primary=hasPreferences?(pick(protectedRoutes)||pick(available)):null;
   const axes=Object.entries(weights).sort((a,b)=>b[1]-a[1]);
   const unknowns=selected.filter(({option})=>!option||option.id==='unknown').map(({question})=>question);
   const styles={mountain:'把视线交给辽阔',lake:'在湖风里留一段空白',heritage:'慢慢走进另一种生活',food:'跟着味道认识云南',rest:'把日子还给自己',novelty:'去日常之外走一走',craft:'留下一件参与过的小事',forest:'为一片叶子停下',street:'在街头生活里停留'};
-  return {ranked,weights,axes,hasPreferences,selected,unknowns,pace,routes,available,primary,protectedRegion,style:axes.length?styles[axes[0][0]]:'让向往再清楚一点',answered:selected.filter(x=>x.option&&x.option.id!=='unknown').length,totalQuestions:selected.length};
+  const selectedExcursions=Object.fromEntries(Object.entries(p.excursions||{}).filter(([base,id])=>typeof id==='string'&&Object.hasOwn(regionById,base)&&Object.hasOwn(placeById,id)&&placeById[id].anchorBase===base&&placeById[id].kind!=='overnight'));
+  const entryRouteId=routeTemplates.some(route=>route.id===p.entryRouteId)?p.entryRouteId:null;
+  const result={entryRouteId,ranked,weights,axes,hasPreferences,selected,unknowns,pace,routes,available,primary,protectedRegion,corridor,selectedExcursions,excursionSelections:Object.values(selectedExcursions).map(id=>placeById[id]),altitudePreference:p.answers.altitude||'unknown',style:axes.length?styles[axes[0][0]]:'让向往再清楚一点',answered:selected.filter(x=>x.option&&x.option.id!=='unknown').length,totalQuestions:selected.length};
+  routes.forEach(route=>{route.excursionStatus=excursionPlanFor(route,result,settings).status;});
+  return result;
 }
 function activitiesFor(id,result){
   // Only the current exploration branch may influence a day's priority.
   const answer=key=>result.selected.find(s=>s.question.id===key)?.option?.id;
   const pull=answer(id+'_pull'),depth=answer(id+'_depth'),activities=regionById[id].activities;
-  let first=0,preferred=null;
+  let first=regionalActivityPriority(id,Object.fromEntries(result.selected.filter(s=>s.option).map(s=>[s.question.id,s.option.id]))),preferred=null;
   if(id==='kunming'&&(depth==='plants'||['learn','green'].includes(pull)))first=1;
   if(id==='dali'){
     if(depth==='mountain'){
@@ -202,12 +232,23 @@ function activitiesFor(id,result){
     first=1;preferred={title:'紫陶手作意向日',detail:'先给紫陶小店与动手体验留时间，确认预约、时长和价格后再安排；其余时间吃当地家常菜，不把多个古建景点塞进同一天。'};
   }
   if(id==='mangshi')first=pull==='flavor'?1:['daily','shade'].includes(pull)?2:0;
+  if(id==='tengchong'){
+    if(depth==='wetland')first=2;
+    else if(depth==='rest'||(depth!=='story'&&pull==='soak')){
+      first=1;preferred={title:'温泉休息意向日',detail:'只在确认温泉设施、票务和适合自己的条件后安排泡汤；其他时间留在同一片区休息。没有合适安排就改住处附近慢逛，不追加热海地热观光。'};
+    }else if(depth!=='story'&&pull==='geothermal')first=1;
+  }
+  if(id==='xishuangbanna'){
+    if(depth==='village'||(depth!=='garden'&&depth!=='city'&&pull==='dai')){
+      first=1;preferred={title:'勐罕傣族村寨意向日',detail:'专程去一处已确认接待的村寨或文化空间，先核交通、开放与票务；留出往返时间，不叠加勐仑植物园。'};
+    }else if(depth==='city'||(depth!=='garden'&&pull==='slow'))first=1;
+  }
   if(id==='lijiang'&&(depth==='worth'||(pull==='mountain'&&depth!=='village'))){
     first=1;preferred={title:'雪山方向意向日',detail:'留一天给雪山方向，先核实天气、交通和票务；高处项目须单独确认，未确认前不安排索道。若条件不合适，改为纳西村落散步。'};
   }
   return [preferred||activities[first],...activities.filter((_,i)=>i!==first)];
 }
-export function itineraryFor(route,result,settings){
+function baseItineraryFor(route,result,settings){
   if(!route||route.blocked.length)return [];
   const ids=route.ids, play=ids.map(()=>route.min);
   for(let n=play.reduce((a,b)=>a+b,0);n<route.fullDays;n++){
@@ -217,11 +258,28 @@ export function itineraryFor(route,result,settings){
   ids.forEach((id,i)=>{
     const activities=activitiesFor(id,result);
     if(i)days.push({type:'transfer',title:regionById[ids[i-1]].name+' → '+regionById[id].name,detail:'跨地区退房、交通、入住，保守预留一整天。班次和实际耗时另核。'+(id==='shangrila'?' 到达后以休息为主。':''),base:id,overnight:true});
-    for(let d=0;d<play[i];d++){const act=activities[d]||{title:'再去一次喜欢的地方',detail:'天气变化、回访、吃饭、闲坐，都可以使用这一天。'};days.push({type:'stay',title:act.title,detail:act.detail+(result.pace==='restful'?' 留半天给临时起意和休息。':''),base:id,overnight:true});}
+    for(let d=0;d<play[i];d++){const act=activities[d]||{title:'再去一次喜欢的地方',detail:'天气变化、回访、吃饭、闲坐，都可以使用这一天。'};days.push({type:'stay',title:act.title,detail:act.detail+(result.pace==='restful'?' 留半天给临时起意和休息。':''),base:id,overnight:true,protected:result.protectedRegion===id&&d===0,visualBase:regionById[id].visualBase||regionById[id].visual});}
   });
   days.push({type:'departure',title:'返程',detail:settings.travelDays===1?'仅在返程确能半天完成时，保留附近早餐或散步。':'留足退房和返程时间。进出顺序按实际票务整体调整。',base:ids.at(-1),overnight:false});
   return days.map((d,i)=>({...d,day:i+1}));
 }
+function excursionPlanFor(route,result,settings){
+  const days=baseItineraryFor(route,result,settings),status=[];
+  Object.entries(result.selectedExcursions||{}).forEach(([base,placeId])=>{
+    const place=placeById[placeId];
+    const skipped=reason=>status.push({baseId:base,placeId,name:place.name,status:'skipped',reason});
+    if(!route||route.blocked.length||!route.ids.includes(base)){skipped('这条路线没有该住宿基地，所选支线不加入本方案。');return;}
+    if(isHighland(place)&&result.altitudePreference==='avoid'){skipped('你明确避开 3000 米以上活动，这条支线不加入。');return;}
+    const candidates=days.map((day,index)=>({day,index})).filter(({day})=>day.type==='stay'&&day.base===base&&!day.protected);
+    if(place.dayBudget>1||!candidates.length){skipped('保留你最想保护的第一段体验后，没有足够的完整停留日；请延长停留或明确更换主体验。');return;}
+    const {day,index}=candidates.at(-1);
+    days[index]={...day,title:place.name+' · '+place.tagline,detail:place.experience+' '+place.tradeoff+' 本日替换一个原有停留日，晚上仍住'+regionById[base].name+'。',excursionId:placeId,visualBase:place.visualBase||regionById[base].visual,conditional:isHighland(place)&&result.altitudePreference!=='willing'};
+    status.push({baseId:base,placeId,name:place.name,status:'applied',day:day.day,replacedTitle:day.title,conditional:days[index].conditional,reason:'替换一个原有停留日，保留原住宿基地与总天数。'});
+  });
+  return {days,status};
+}
+export function itineraryFor(route,result,settings){return excursionPlanFor(route,result,settings).days;}
+export function excursionStatusFor(route,result,settings){return excursionPlanFor(route,result,settings).status;}
 export function validateSession(input){
   const fail=()=>{throw new Error('这不是本版心向彩云的有效手记，原有答案没有改变。');};
   if(!input||input.version!==2||!Array.isArray(input.profiles)||input.profiles.length!==2||![0,1].includes(input.active))fail();
@@ -229,11 +287,20 @@ export function validateSession(input){
   if(!s||!Number.isInteger(s.days)||s.days<3||s.days>9||![1,2].includes(s.travelDays)||![1,2,3].includes(s.maxBases)||!(s.budget===null||(Number.isFinite(s.budget)&&s.budget>=0&&s.budget<=1000000)))fail();
   const out=blankSession();out.active=input.active;out.settings={days:s.days,travelDays:s.travelDays,maxBases:s.maxBases,budget:s.budget};
   out.profiles=input.profiles.map(p=>{
-    if(!p||typeof p.name!=='string'||p.name.length>20||!(p.focus===null||p.focus==='unknown'||Object.hasOwn(regionById,p.focus))||!p.answers||typeof p.answers!=='object'||Array.isArray(p.answers)||!p.notes||typeof p.notes!=='object'||Array.isArray(p.notes)||!Array.isArray(p.excluded)||p.excluded.some(id=>!Object.hasOwn(regionById,id)))fail();
+    if(!p||typeof p.name!=='string'||p.name.length>20||!(p.focus===null||(typeof p.focus==='string'&&(p.focus==='unknown'||Object.hasOwn(regionById,p.focus))))||!p.answers||typeof p.answers!=='object'||Array.isArray(p.answers)||!p.notes||typeof p.notes!=='object'||Array.isArray(p.notes)||!Array.isArray(p.excluded)||p.excluded.some(id=>typeof id!=='string'||!Object.hasOwn(regionById,id)))fail();
+    const entryRouteId=p.entryRouteId===undefined?null:p.entryRouteId;
+    if(!(entryRouteId===null||routeTemplates.some(route=>route.id===entryRouteId)))fail();
+    const routeId=p.routeId===undefined?null:p.routeId;
+    if(!(routeId===null||routeTemplates.some(route=>route.id===routeId)))fail();
+    const corridor=p.corridor===undefined?null:p.corridor;
+    if(!(corridor===null||(typeof corridor==='string'&&Object.hasOwn(corridorById,corridor))))fail();
+    const inputExcursions=p.excursions===undefined?{}:p.excursions,excursions={};
+    if(!inputExcursions||typeof inputExcursions!=='object'||Array.isArray(inputExcursions))fail();
+    Object.entries(inputExcursions).forEach(([base,id])=>{if(typeof id!=='string'||!Object.hasOwn(regionById,base)||!Object.hasOwn(placeById,id)||placeById[id].anchorBase!==base||!['daytrip','replacement'].includes(placeById[id].kind))fail();excursions[base]=id;});
     const answers={},notes={};
     Object.entries(p.answers).forEach(([id,value])=>{if(!Object.hasOwn(questionMap,id)||!questionMap[id].options.some(o=>o.id===value))fail();answers[id]=value;});
     Object.entries(p.notes).forEach(([id,value])=>{if(!Object.hasOwn(questionMap,id)||typeof value!=='string'||value.length>500)fail();notes[id]=value;});
-    return {name:p.name,focus:p.focus,answers,notes,excluded:[...new Set(p.excluded)],cursor:Number.isInteger(p.cursor)?Math.max(0,Math.min(p.cursor,20)):0,complete:p.complete===true};
+    return {name:p.name,focus:p.focus,corridor,excursions,routeId,entryRouteId,answers,notes,excluded:[...new Set(p.excluded)],cursor:Number.isInteger(p.cursor)?Math.max(0,Math.min(p.cursor,20)):0,complete:p.complete===true};
   });out.view=['home','journey','results','compare'].includes(input.view)?input.view:'home';return out;
 }
 export function compareProfiles(session){

@@ -1,4 +1,4 @@
-import {regionById,questionMap,axisNames} from './journey.js';
+import {regionById,questionMap,axisNames} from './journey.js?v=20260927-4';
 const themes={dali:'湖岸与白族村落',shangrila:'藏地与高原',kunming:'植物与春城日常',jianshui:'古城手作与风味',mangshi:'早市与边城风味',fuxian:'湖边留白',lijiang:'纳西村落与远山',tengchong:'侨乡与温泉',xishuangbanna:'热带植物与傣味'};
 export function reportFor(profile,result,route,settings){
  const active=id=>result.selected.find(s=>s.question.id===id)?.option;
@@ -10,7 +10,7 @@ export function reportFor(profile,result,route,settings){
   if(id==='kunming')return depth==='plants'||pull==='learn'?'植物观察的一整天':themes[id];
   if(id==='jianshui'&&pull==='hands')return '古城里的紫陶手作';
   if(id==='lijiang'&&depth==='village')return '纳西村落慢走';
-  return themes[id];
+  return themes[id]||regionById[id]?.subtitle||'当地生活与自然';
  };
  const keywords=ids.map(theme);if(keywords.length<3)keywords.push(result.pace==='restful'?'每天留半天自由时间':'一天一个重点');
  const reasons=[];

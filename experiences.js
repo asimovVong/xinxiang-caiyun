@@ -1,3 +1,4 @@
+import {additionalGuides,placeById} from './regional-model.js?v=20260927-4';
 // Editorial day ideas, not bookable offers. Coordinates are approximate regional
 // anchors for the overview map, not attraction entrances or navigation points.
 const daliOldTownDay = {
@@ -172,9 +173,15 @@ export const regionGuides = {
   }
 };
 
+Object.assign(regionGuides,additionalGuides);
+
 export function getDayGuide(day) {
   if (!day || !Object.hasOwn(regionGuides, day.base)) return null;
   const guide = regionGuides[day.base];
+  if(day.type==='stay'&&Object.hasOwn(placeById,day.excursionId)){
+    const place=placeById[day.excursionId];
+    if(place.anchorBase===day.base&&['daytrip','replacement'].includes(place.kind))return {...place.oneDay,match:[],title:place.name+' · '+place.tagline,effort:'占用一个完整停留日，交通与步行另核',excursionId:place.id,stayBase:day.base};
+  }
   if (day.type === 'arrival' || day.type === 'transfer') {
     const highland = day.base === 'shangrila';
     return {match: [], title: highland ? '抵达高原，先把自己安顿好' : '抵达与安顿，不加景点任务',
@@ -186,6 +193,16 @@ export function getDayGuide(day) {
   }
   if (day.type === 'departure') return {match: [], title: '从容返程，今天不追新景点', morning: '按实际车次或航班退房，预留市内接驳与候车候机时间。', afternoon: '安排返程；只有交通已确认且确有余量，才在住宿附近吃饭或短暂散步。', evening: '以到家或完成下一段交通为主，不假定能够额外游玩。', food: '一顿方便、合口味的早餐或路餐', backup: '交通变化时先调整接驳，不保留会影响返程的小项目。', effort: '交通日'};
   const title = String(day.title || '');
+  if(day.base==='tengchong'&&title.includes('温泉休息'))return {
+    match:[],title:'腾冲温泉休息，今天只保留一种安排',
+    morning:'睡够再吃早餐；仅在已确认温泉设施、票务、预约和适合自己的条件后前往，未确认就留在住宿附近。',
+    afternoon:'把时间留给已确认的休闲安排与休息，不同时增加和顺、湿地或火山观光。',
+    evening:'在同一片区吃一顿合口味的饭，再从容回住处。',
+    food:'饵丝、大救驾或当地家常菜',backup:'预约、设施或天气不合适，就整天改为住宿附近吃饭、喝茶、慢走。',effort:'轻松，具体设施与条件另核'
+  };
+  if(day.base==='xishuangbanna'&&title.includes('村寨'))return {
+    ...placeById.ganlanba.oneDay,match:[],title:'勐罕／橄榄坝，村寨日常的一天',effort:'有往返交通，步行可缩短'
+  };
   // A choice between city rest and mountain activity is not consent to go uphill.
   if (day.base === 'dali' && /苍山/.test(title) && /古城/.test(title)) return {...guide.days[2]};
   if (day.base === 'dali' && /苍山/.test(title)) return {...daliMountainDay};
@@ -206,7 +223,7 @@ export function getDayGuide(day) {
       food: '喜欢的早餐 → 鸡豆凉粉或小吃 → 纳西家常菜',
       backup: '喜欢的地方临时不开放，就在同片区找替代；不用为了补项目重新跨区。', effort: '很轻松'};
   }
-  const matched = guide.days.find(item => item.match.some(keyword => title.includes(keyword)));
+  const matched = guide.days.find(item => item.title===title)||guide.days.find(item => item.match.some(keyword => title.includes(keyword)));
   if (matched) return {...matched};
   return {match: [], title: '在这个地方，再留一个空白日', morning: '去昨天喜欢的地方吃早餐，或睡到自然醒。', afternoon: '在同一住宿片区重访一段街巷、一家小店或一处开放风景，不新增跨地区交通。', evening: '选择真正想再吃一次的地方味道，然后休息。', food: guide.foodTrail.map(item => item.name).join('／'), backup: '天气变化时保留吃饭、阅读与聊天；今天可以没有新的景点。', effort: '很轻松'};
 }
